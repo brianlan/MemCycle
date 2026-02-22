@@ -17,7 +17,7 @@ import { calculateStats, getDueCards, submitReview } from "@/lib/services/schedu
 import { recordNoResponse } from "@/lib/services/noResponseHandler";
 import { exportToFile, importFromFile } from "@/lib/services/exportService";
 import { createCard } from "@/lib/repositories/cardRepository";
-import { getDecks } from "@/lib/repositories/deckRepository";
+import { createDeck, deleteDeck, getDecks, updateDeck } from "@/lib/repositories/deckRepository";
 import { hidePopup, showPopup } from "@/lib/popup";
 import { useKeyboardShortcuts, globalShortcuts } from "@/lib/hooks/useKeyboardShortcuts";
 
@@ -560,7 +560,25 @@ function App() {
 
       <div className="py-6">
         {activeView === "decks" ? (
-          <DeckList />
+          <DeckList
+            initialDecks={availableDecks}
+            onCreateDeck={async (data) => {
+              const deck = await createDeck(data.name, data.description);
+              setAvailableDecks((prev) => [...prev, deck]);
+              return deck;
+            }}
+            onUpdateDeck={async (id, data) => {
+              const deck = await updateDeck(id, data);
+              setAvailableDecks((prev) =>
+                prev.map((d) => (d.id === deck.id ? deck : d))
+              );
+              return deck;
+            }}
+            onDeleteDeck={async (id) => {
+              await deleteDeck(id);
+              setAvailableDecks((prev) => prev.filter((d) => d.id !== id));
+            }}
+          />
         ) : (
           <section className="container mx-auto p-6 max-w-5xl space-y-4" data-testid="cards-view-container">
             <div className="space-y-1">

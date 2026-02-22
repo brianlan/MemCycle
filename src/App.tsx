@@ -29,16 +29,6 @@ function isTauriRuntimeAvailable(): boolean {
   return navigator.userAgent.includes("Tauri");
 }
 
-const demoDecks: Deck[] = [
-  {
-    id: "d1",
-    name: "General Knowledge",
-    description: "A collection of general knowledge cards",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
 const demoReviewCards: CardType[] = [
   {
     id: "1",
@@ -65,7 +55,7 @@ type AppView = "decks" | "cards";
 function App() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<"sm2" | "leitner">("sm2");
   const [reviewCards, setReviewCards] = useState<CardType[]>([]);
-  const [availableDecks, setAvailableDecks] = useState<Deck[]>(demoDecks);
+  const [availableDecks, setAvailableDecks] = useState<Deck[]>([]);
   const [trayStats, setTrayStats] = useState({ dueCount: 5, streakDays: 7 });
   const [activeView, setActiveView] = useState<AppView>("decks");
   const [windowLabel, setWindowLabel] = useState("main");
@@ -562,22 +552,22 @@ function App() {
         {activeView === "decks" ? (
           <DeckList
             initialDecks={availableDecks}
-            onCreateDeck={async (data) => {
+            onCreateDeck={isTauriRuntime ? async (data) => {
               const deck = await createDeck(data.name, data.description);
               setAvailableDecks((prev) => [...prev, deck]);
               return deck;
-            }}
-            onUpdateDeck={async (id, data) => {
+            } : undefined}
+            onUpdateDeck={isTauriRuntime ? async (id, data) => {
               const deck = await updateDeck(id, data);
               setAvailableDecks((prev) =>
                 prev.map((d) => (d.id === deck.id ? deck : d))
               );
               return deck;
-            }}
-            onDeleteDeck={async (id) => {
+            } : undefined}
+            onDeleteDeck={isTauriRuntime ? async (id) => {
               await deleteDeck(id);
               setAvailableDecks((prev) => prev.filter((d) => d.id !== id));
-            }}
+            } : undefined}
           />
         ) : (
           <section className="container mx-auto p-6 max-w-5xl space-y-4" data-testid="cards-view-container">

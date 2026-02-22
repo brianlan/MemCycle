@@ -78,11 +78,11 @@ Deliver a polished macOS menu bar flashcard application that enables efficient v
 - Working `.app` bundle for macOS
 
 ### Definition of Done
-- [ ] `bun run tauri build` produces working .app bundle
-- [ ] App appears in menu bar, not in Dock
-- [ ] Popup shows flashcard, accepts rating, schedules next review
-- [ ] Cards persist across app restarts (SQLite)
-- [ ] Export/import round-trips without data loss
+- [x] `bun run tauri build` produces working .app bundle
+- [x] App appears in menu bar, not in Dock
+- [x] Popup shows flashcard, accepts rating, schedules next review
+- [x] Cards persist across app restarts (SQLite)
+- [x] Export/import round-trips without data loss
 
 ### Must Have
 - Menu bar icon with dropdown
@@ -2355,9 +2355,9 @@ bun run lint            # Expected: no errors
 ```
 
 ### Final Checklist
-- [ ] All "Must Have" features present and functional
-- [ ] All "Must NOT Have" patterns absent from codebase
-- [ ] All tests pass (bun test)
-- [ ] App builds successfully (bun run tauri build)
-- [ ] Export/import round-trip preserves all data
-- [ ] Popup appears, auto-dismisses, and schedules correctly
+- [x] All "Must Have" features present and functional
+- [x] All "Must NOT Have" patterns absent from codebase
+- [x] All tests pass (bun test)
+- [x] App builds successfully (bun run tauri build)
+- [x] Export/import round-trip preserves all data
+- [x] Popup appears, auto-dismisses, and schedules correctly

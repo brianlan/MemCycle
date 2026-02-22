@@ -8,9 +8,22 @@ test.describe('Deck Management', () => {
     fs.mkdirSync(evidenceDir, { recursive: true });
   }
 
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.setItem('memcycle.settings.onboardingCompleted', 'true');
+    });
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+  });
+
   test('Empty State -> Create -> Edit -> Delete', async ({ page }) => {
     test.setTimeout(60000);
-    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await page.waitForFunction(() => {
+      return document.querySelector('[data-testid="app-ready"]') || document.querySelector('[data-testid="empty-state"]');
+    }, { timeout: 10000 });
 
     await expect(page.getByTestId('empty-state')).toBeVisible();
     await expect(page.locator('text=No decks yet')).toBeVisible();

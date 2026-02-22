@@ -552,22 +552,55 @@ function App() {
         {activeView === "decks" ? (
           <DeckList
             initialDecks={availableDecks}
-            onCreateDeck={isTauriRuntime ? async (data) => {
-              const deck = await createDeck(data.name, data.description);
-              setAvailableDecks((prev) => [...prev, deck]);
-              return deck;
-            } : undefined}
-            onUpdateDeck={isTauriRuntime ? async (id, data) => {
-              const deck = await updateDeck(id, data);
-              setAvailableDecks((prev) =>
-                prev.map((d) => (d.id === deck.id ? deck : d))
-              );
-              return deck;
-            } : undefined}
-            onDeleteDeck={isTauriRuntime ? async (id) => {
-              await deleteDeck(id);
-              setAvailableDecks((prev) => prev.filter((d) => d.id !== id));
-            } : undefined}
+            onCreateDeck={async (data) => {
+              try {
+                const deck = await createDeck(data.name, data.description);
+                setAvailableDecks((prev) => [...prev, deck]);
+                toast({ title: "Deck created", description: `"${data.name}" has been saved.` });
+                return deck;
+              } catch (error) {
+                console.error("Failed to create deck:", error);
+                toast({
+                  title: "Failed to create deck",
+                  description: error instanceof Error ? error.message : "Please try again.",
+                  variant: "destructive",
+                });
+                throw error;
+              }
+            }}
+            onUpdateDeck={async (id, data) => {
+              try {
+                const deck = await updateDeck(id, data);
+                setAvailableDecks((prev) =>
+                  prev.map((d) => (d.id === deck.id ? deck : d))
+                );
+                toast({ title: "Deck updated", description: `"${data.name}" has been updated.` });
+                return deck;
+              } catch (error) {
+                console.error("Failed to update deck:", error);
+                toast({
+                  title: "Failed to update deck",
+                  description: error instanceof Error ? error.message : "Please try again.",
+                  variant: "destructive",
+                });
+                throw error;
+              }
+            }}
+            onDeleteDeck={async (id) => {
+              try {
+                await deleteDeck(id);
+                setAvailableDecks((prev) => prev.filter((d) => d.id !== id));
+                toast({ title: "Deck deleted", description: "The deck has been removed." });
+              } catch (error) {
+                console.error("Failed to delete deck:", error);
+                toast({
+                  title: "Failed to delete deck",
+                  description: error instanceof Error ? error.message : "Please try again.",
+                  variant: "destructive",
+                });
+                throw error;
+              }
+            }}
           />
         ) : (
           <section className="container mx-auto p-6 max-w-5xl space-y-4" data-testid="cards-view-container">

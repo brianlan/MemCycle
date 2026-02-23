@@ -39,8 +39,12 @@ test.describe('timer countdown', () => {
 
     await expect(page.getByText('Card 1 of 2')).toBeVisible();
 
-    await page.clock.fastForward(30000);
-    await page.clock.fastForward(1);
+    const countdown = page.locator('.font-mono').filter({ hasText: /^\d+s$/ });
+    await waitForTextContent(countdown, '30s');
+    await page.clock.runFor(1000);
+    await waitForTextContent(countdown, '29s');
+
+    await page.clock.runFor(29000);
 
     await expect(page.getByText('Card 1 of 2')).not.toBeVisible();
     await expect(startReview).toBeVisible();
@@ -54,13 +58,16 @@ test.describe('timer countdown', () => {
     const countdown = page.locator('.font-mono').filter({ hasText: /^\d+s$/ });
     await waitForTextContent(countdown, '30s');
 
-    await page.clock.fastForward(5000);
+    await page.clock.runFor(1000);
+    await waitForTextContent(countdown, '29s');
+
+    await page.clock.runFor(4000);
     await waitForTextContent(countdown, '25s');
 
     await page.getByRole('button', { name: /^Show Answer/ }).click();
     await expect(page.getByRole('heading', { name: 'Back', level: 3 })).toBeVisible();
 
-    await page.clock.fastForward(5000);
+    await page.clock.runFor(5000);
     await waitForTextContent(countdown, '25s');
   });
 
@@ -72,7 +79,10 @@ test.describe('timer countdown', () => {
     const countdown = page.locator('.font-mono').filter({ hasText: /^\d+s$/ });
     await waitForTextContent(countdown, '30s');
 
-    await page.clock.fastForward(5000);
+    await page.clock.runFor(1000);
+    await waitForTextContent(countdown, '29s');
+
+    await page.clock.runFor(4000);
     await waitForTextContent(countdown, '25s');
 
     await page.getByRole('button', { name: /^Show Answer/ }).click();
@@ -92,7 +102,7 @@ test.describe('timer countdown', () => {
     await startReview.click();
 
     await page.clock.fastForward(30000);
-    await page.clock.fastForward(1);
+    await page.clock.runFor(0);
 
     const latestLog = await page.evaluate(async () => {
       const modulePath = '/src/lib/repositories/remoteDb.ts';

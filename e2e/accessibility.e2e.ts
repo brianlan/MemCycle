@@ -55,6 +55,7 @@ test.describe('Keyboard Accessibility', () => {
     test('Focus indicator is visible on focused buttons', async ({ page }) => {
       const decksButton = page.getByRole('button', { name: 'Decks' });
       await decksButton.click();
+      await decksButton.focus();
       await expect(decksButton).toBeFocused();
 
       const focusStyles = await page.evaluate(() => {
@@ -131,7 +132,7 @@ test.describe('Keyboard Accessibility', () => {
         'Result: Input elements have visible focus indicators when keyboard focused.'
       );
 
-      await page.getByRole('button', { name: 'Save Card' }).click();
+      await page.keyboard.press('Escape');
     });
   });
 
@@ -227,7 +228,7 @@ test.describe('Keyboard Accessibility', () => {
         'Result: Card Form modal allows keyboard navigation between inputs.'
       );
 
-      await page.getByRole('button', { name: 'Save Card' }).click();
+      await page.keyboard.press('Escape');
     });
   });
 

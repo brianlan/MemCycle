@@ -1,0 +1,5 @@
+Review popup reveal test:
+- Space key reveals answer: Check
+- Enter key reveals answer: Check
+
+Result: Both Space and Enter keys properly reveal card answers.

@@ -1,0 +1,9 @@
+Removed MemCycle login item via AppleScript and listed login items.
+
+stdout:
+delete_rc=0 delete_out= delete_err=
+list=MiniMax, popup_reminder, Scroll Reverser, TypeWhisper, ZeroTier, AlDente, Rectangle, Snipaste
+
+stderr:
+
+exit_code=0

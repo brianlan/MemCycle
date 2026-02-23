@@ -1,0 +1,23 @@
+Task 17 Restart/Persistence Evidence
+Date: 2026-02-21
+
+Persistence path validated:
+1) Rust emits `timer:next_fire_updated` with `nextFireTimestampMs` after start/reset/fire.
+2) TS `timerService` listens for `timer:next_fire_updated` and writes `settings.timerNextFireTimestampMs`.
+3) TS `startTimer()` reads `settings.timerNextFireTimestampMs` and passes it back into Rust `start_timer` as `nextFireTimestampMs`.
+
+Files used:
+- src/lib/services/timerService.ts
+- src/lib/services/settingsService.ts
+- src-tauri/src/timer.rs
+
+Time-until-next validation:
+- `get_time_until_next` returns:
+  - `None` when timer is not running.
+  - `Some(0)` when next fire is due/overdue.
+  - `Some(remaining_seconds)` for future scheduled fire (ceiling conversion from ms via `(remaining_ms + 999) / 1000`).
+- TS wrapper `getTimeUntilNext()` directly invokes Rust command and returns `number | null`.
+
+Restart recovery behavior:
+- On app restart, persisted timestamp is reused by `startTimer()`.
+- If persisted timestamp is in the past, Rust clamps start to `now` so overdue reminders fire promptly.

@@ -1,0 +1,11 @@
+sqlite> .tables
+_sqlx_migrations  cards             review_logs     
+card_scheduling   decks             settings
+
+Tables created by migration 0001_init.up.sql:
+- decks
+- cards
+- card_scheduling
+- review_logs
+- settings
+- _sqlx_migrations (internal tracking table)

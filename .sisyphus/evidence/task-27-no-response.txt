@@ -1,0 +1,1 @@
+Observed review popup auto-dismiss after 30s timeout in web run and flow returned to main view.

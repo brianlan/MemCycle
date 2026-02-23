@@ -1,0 +1,30 @@
+Task 18 - PostgreSQL remote connection evidence
+Date: 2026-02-21
+
+Command: bun test
+Result: PASS
+Output: 13 pass, 0 fail
+
+Command: bun run tauri build --debug
+Result: PASS
+Bundle: src-tauri/target/debug/bundle/macos/MemCycle.app
+
+Command: grep for DB load points (`Database.load(` and `getDatabase(`)
+Result:
+- Domain repositories/services now route through `remoteDb.getDatabase()`:
+  - src/lib/repositories/cardRepository.ts
+  - src/lib/repositories/deckRepository.ts
+  - src/lib/services/schedulingService.ts
+  - src/lib/services/noResponseHandler.ts
+
+Command: bun -e "import { connectRemote, testConnection, switchToRemote, switchToLocal, getDatabaseMode } from './src/lib/repositories/remoteDb.ts'; ..."
+Output:
+- configured-unreachable false
+- switched-remote
+- mode-after-switch remote
+- mode-after-local local
+
+Interpretation:
+- Remote connection URL can be configured in-memory via connectRemote.
+- testConnection returns false cleanly when remote host is unreachable.
+- switchToRemote/switchToLocal explicitly toggle shared DB mode for all consumers using `remoteDb.getDatabase()`.

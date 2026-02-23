@@ -1,0 +1,16 @@
+bun run test:run -- sm2
+
+RUN  v4.0.18 /Users/rlan/projects/MemCycle
+  ✓ src/__tests__/algorithms/sm2.test.ts (6 tests) 2ms
+
+Test Files  1 passed (1)
+Tests       6 passed (6)
+Duration    277ms
+
+bun test --run
+
+bun test v1.3.8
+ 13 pass
+ 0 fail
+ 34 expect() calls
+Ran 13 tests across 3 files. [16.00ms]

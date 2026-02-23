@@ -1,0 +1,6 @@
+Enter/Space activation test:
+- Enter activated Start Review button: Check
+- Space revealed answer: Check
+- Space activated rating button: Check
+
+Result: Both Enter and Space keys properly activate focused buttons.

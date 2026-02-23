@@ -1,0 +1,5 @@
+Cmd+, keyboard shortcut test:
+- Settings opened from main page: Check
+- Escape closed Settings: Check
+
+Result: Keyboard shortcut opens and closes Settings dialog.

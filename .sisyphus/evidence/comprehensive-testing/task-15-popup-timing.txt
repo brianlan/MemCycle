@@ -1,0 +1,66 @@
+$ bash scripts/run-native-smoke.sh --grep "popup timing"
+[native-smoke] building app...
+$ tauri build
+        Info Looking up installed tauri packages to check mismatched versions...
+        Warn The bundle identifier "com.memcycle.app" set in `"tauri.conf.json" identifier` ends with `.app`. This is not recommended because it conflicts with the application bundle extension on macOS.
+     Running beforeBuildCommand `bun run build`
+$ tsc && vite build
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 2296 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/core.js is dynamically imported by /Users/rlan/projects/MemCycle/src/App.tsx but also statically imported by /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/dpi.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/event.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/image.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/webview.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/webviewWindow.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/window.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/plugin-autostart/dist-js/index.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/plugin-sql/dist-js/index.js, /Users/rlan/projects/MemCycle/src/lib/popup.ts, /Users/rlan/projects/MemCycle/src/lib/services/exportService.ts, /Users/rlan/projects/MemCycle/src/lib/services/timerService.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/event.js is dynamically imported by /Users/rlan/projects/MemCycle/src/App.tsx but also statically imported by /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/webview.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/webviewWindow.js, /Users/rlan/projects/MemCycle/node_modules/@tauri-apps/api/window.js, /Users/rlan/projects/MemCycle/src/lib/services/timerService.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/index.html                          0.46 kB │ gzip:   0.29 kB
+dist/assets/index-e5pwrNQF.css          46.64 kB │ gzip:   8.60 kB
+dist/assets/webviewWindow-B7nHoD70.js   17.50 kB │ gzip:   3.71 kB
+dist/assets/index-Czo7Hs0m.js          713.76 kB │ gzip: 216.94 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.40s
+   Compiling memcycle v0.1.0 (/Users/rlan/projects/MemCycle/src-tauri)
+    Finished `release` profile [optimized] target(s) in 14.99s
+       Built application at: /Users/rlan/projects/MemCycle/src-tauri/target/release/memcycle
+    Bundling MemCycle.app (/Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/macos/MemCycle.app)
+     Signing with identity "-"
+Signing with identity "-"
+Signing /Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/macos/MemCycle.app/Contents/MacOS/memcycle
+/Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/macos/MemCycle.app/Contents/MacOS/memcycle: replacing existing signature
+Signing with identity "-"
+Signing /Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/macos/MemCycle.app
+/Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/macos/MemCycle.app: replacing existing signature
+        Warn skipping app notarization, no APPLE_ID & APPLE_PASSWORD & APPLE_TEAM_ID or APPLE_API_KEY & APPLE_API_ISSUER & APPLE_API_KEY_PATH environment variables found
+    Bundling MemCycle_1.0.0_aarch64.dmg (/Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/dmg/MemCycle_1.0.0_aarch64.dmg)
+     Running bundle_dmg.sh
+    Finished 2 bundles at:
+        /Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/macos/MemCycle.app
+        /Users/rlan/projects/MemCycle/src-tauri/target/release/bundle/dmg/MemCycle_1.0.0_aarch64.dmg
+
+[native-smoke] running native smoke tests...
+
+Running 14 tests using 1 worker
+
+[1A[2K[1/14] e2e-native/native-smoke.e2e.ts:30:3 › native macOS smoke › launch app and switch Decks/Cards/Decks
+[1A[2K[2/14] e2e-native/native-smoke.e2e.ts:57:3 › native macOS smoke › deck count remains stable across relaunch
+[1A[2K[3/14] e2e-native/popup-timing.e2e.ts:40:3 › popup timing and focus › popup window gains focus when appearing
+[1A[2K[4/14] e2e-native/popup-timing.e2e.ts:83:3 › popup timing and focus › only one popup window at a time
+[1A[2K[5/14] e2e-native/popup-timing.e2e.ts:121:3 › popup timing and focus › popup dismisses and releases focus
+[1A[2K[6/14] e2e-native/popup-timing.e2e.ts:166:3 › popup timing and focus › popup appears at configured interval (mocked timer)
+[1A[2K[7/14] e2e-native/popup-timing.e2e.ts:196:3 › popup timing and focus › popup doesn't appear during user activity
+[1A[2K[8/14] e2e-native/popup-timing.e2e.ts:221:3 › popup timing and focus › popup recovery after system sleep/wake
+[1A[2K[9/14] e2e-native/tray-interactions.e2e.ts:40:3 › tray interactions › tray icon click opens popup window
+[1A[2K[10/14] e2e-native/tray-interactions.e2e.ts:72:3 › tray interactions › tray menu 'Open Dashboard' opens main window
+[1A[2K[11/14] e2e-native/tray-interactions.e2e.ts:109:3 › tray interactions › tray menu 'Review Now' triggers review popup
+[1A[2K[12/14] e2e-native/tray-interactions.e2e.ts:142:3 › tray interactions › tray menu 'Settings' opens settings panel
+[1A[2K[13/14] e2e-native/tray-interactions.e2e.ts:175:3 › tray interactions › tray menu 'Quit' closes application gracefully
+[1A[2K[14/14] e2e-native/tray-interactions.e2e.ts:209:3 › tray interactions › graceful skip without accessibility permissions
+[1A[2K  5 skipped
+  9 passed (1.0m)

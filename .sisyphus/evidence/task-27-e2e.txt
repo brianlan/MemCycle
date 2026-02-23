@@ -1,0 +1,1 @@
+Verified tray->decks/cards/settings navigation, card creation (default + CollinsDictionary), review flow, and export/import tray entrypoint in web runtime.

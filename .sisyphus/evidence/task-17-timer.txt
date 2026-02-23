@@ -1,0 +1,31 @@
+Task 17 Timer Service Evidence
+Date: 2026-02-21
+
+Build verification:
+- Ran: bun run tauri build --debug
+- Result: PASS
+- Output includes successful bundle at:
+  src-tauri/target/debug/bundle/macos/MemCycle.app
+
+Implemented timer command surface:
+- start_timer (Rust): src-tauri/src/timer.rs
+- stop_timer (Rust): src-tauri/src/timer.rs
+- reset_timer (Rust): src-tauri/src/timer.rs
+- get_time_until_next (Rust): src-tauri/src/timer.rs
+- TS wrappers: src/lib/services/timerService.ts
+
+Timer firing integration check:
+- Rust timer worker calls popup::show_popup_from_timer(&app) on fire when DND stub allows.
+- popup::show_popup_from_timer is implemented in src-tauri/src/popup.rs and reuses existing popup show flow.
+
+Wake/sleep handling check:
+- Timer loop compares persisted wall-clock timestamps (`SystemTime`) on each wake tick.
+- If wake occurs after target time, next loop iteration fires immediately because `now >= next_fire_timestamp_ms`.
+
+DND gate check:
+- Implemented as stub `is_dnd_enabled() -> false` in src-tauri/src/timer.rs.
+- Limitation documented in .sisyphus/notepads/memcycle-v1/issues.md.
+
+Additional verification (2026-02-21):
+- Ran: bun test
+- Result: PASS (13 pass, 0 fail)

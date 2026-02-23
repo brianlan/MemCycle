@@ -1,0 +1,25 @@
+# Markdown Renderer Evidence
+
+## task-7-markdown.png
+The screenshot shows the markdown rendering demo displaying:
+- H1 Header: "Markdown Demo"
+- Bold text: "bold" and italic text: "italic"
+- H2 Header: "Features"
+- Unordered list with 3 items
+- Links to Vite and Tauri
+- Table with Feature/Status columns
+
+## task-7-codeblock.png  
+The screenshot shows syntax highlighting in the JavaScript code block with:
+- Dark theme (github-dark)
+- Keywords highlighted (function, const, return)
+- String literals highlighted (`Hello, ${name}!`)
+- Function definitions highlighted
+
+The component successfully renders:
+- Headers (h1, h2, h3)
+- Emphasis (bold, italic)
+- Lists (ul, ol)
+- Code blocks with syntax highlighting
+- Links
+- Tables (GFM)

@@ -1,0 +1,4 @@
+$ bun run tsc --noEmit
+
+
+exit_code=0

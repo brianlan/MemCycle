@@ -1,0 +1,31 @@
+Task 16 Persistence Verification
+Date: 2026-02-21
+
+Implemented file:
+- src/lib/services/settingsService.ts
+
+Implemented functions:
+- getSetting(key)
+- setSetting(key, value)
+- getAllSettings()
+- resetToDefaults()
+
+Behavior implemented:
+- Uses settings table in sqlite:app.db via @tauri-apps/plugin-sql.
+- Enables PRAGMA foreign_keys = ON for the DB connection.
+- Writes defaults on first run for:
+  - popupIntervalMinutes=25
+  - autoDismissSeconds=30
+  - selectedAlgorithm=sm2
+  - databaseMode=local
+  - launchAtLogin=false
+- getAllSettings() always returns a fully-populated settings object.
+
+Verification commands:
+1) bun test
+   Result: PASS (13 pass, 0 fail)
+
+2) bun run tauri build --debug
+   Result: PASS
+   Built app bundle:
+   /Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app

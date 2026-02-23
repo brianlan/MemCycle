@@ -1,0 +1,16 @@
+Task: 10. Deck Repository (CRUD)
+Date: 2026-02-21
+
+Command:
+`bun run tauri build --debug`
+
+Key output:
+- `Running beforeBuildCommand \`bun run build\``
+- `tsc && vite build` succeeded
+- `Compiling memcycle v0.1.0`
+- `Finished 'dev' profile [unoptimized + debuginfo]`
+- `Built application at: /Users/rlan/projects/MemCycle/src-tauri/target/debug/memcycle`
+- `Finished 1 bundle at: /Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app`
+
+Notes:
+- Implemented `src/lib/repositories/deckRepository.ts` with `createDeck`, `getDecks`, `getDeck`, `updateDeck`, `deleteDeck` using `@tauri-apps/plugin-sql` and `sqlite:app.db`.

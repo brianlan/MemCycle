@@ -1,0 +1,34 @@
+# Task 30: App Bundle and Signing - Build Evidence
+
+## Build Result: SUCCESS
+
+### Build Command
+```
+bun run tauri build
+```
+
+### Artifacts Produced
+1. **App Bundle**: `src-tauri/target/release/bundle/macos/MemCycle.app`
+   - Signed with ad-hoc identity "-"
+   - Successfully signed both executable and app bundle
+
+2. **DMG Installer**: `src-tauri/target/release/bundle/dmg/MemCycle_1.0.0_aarch64.dmg`
+   - Size: ~6.1 MB
+   - Successfully created via bundle_dmg.sh
+
+### Configuration Applied
+- **Product Name**: MemCycle
+- **Version**: 1.0.0 (upgraded from 0.1.0)
+- **Bundle Identifier**: com.memcycle.flashcard
+- **Category**: Education
+- **Bundle Targets**: "all" (app + dmg)
+- **Signing Identity**: "-" (ad-hoc for local builds)
+
+### Build Output Summary
+- Frontend: Vite build successful (707.96 kB JS bundle)
+- Rust: Release profile compiled in ~79s
+- Signing: Ad-hoc signing applied (no Apple Developer cert required)
+- Notarization: Skipped (expected for local builds without env vars)
+
+### Files Modified
+- `src-tauri/tauri.conf.json`: Updated version, category, bundle targets, and macOS signing config

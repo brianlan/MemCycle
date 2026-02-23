@@ -1,0 +1,33 @@
+MemCycle Final Manual QA (Playwright)
+Date: 2026-02-22
+Environment: Web demo via bun run dev (clean localStorage start)
+
+Scenarios Executed
+1) Onboarding skip flow: PASS
+   - Evidence: onboarding-initial.png, onboarding-skip-complete.png
+2) Onboarding complete flow: PASS
+   - Evidence: onboarding-complete.png
+3) Deck CRUD (create/edit/delete): PASS
+   - Evidence: deck-created.png, deck-crud-after-delete.png
+4) Card form save via Cmd+Enter: PASS (form closed after shortcut; stillOpen=0)
+   - Evidence: card-cmd-enter-save.png
+5) CollinsDictionary generate (mocked network): PASS
+   - Evidence: collins-generate-mocked.png
+6) Settings save/persist (popup interval changed, localStorage updated): PASS
+   - Evidence: settings-save.png
+7) Tray dropdown open/close: PASS
+   - Evidence: tray-open.png, tray-close-attempt.png
+8) Review flow reveal/rate (Show Answer -> Good): PASS
+   - Evidence: review-popup-initial.png, review-reveal-rate.png
+9) No-response timeout behavior: FAIL in web demo (countdown reaches 0s and remains visible)
+   - Evidence: no-response-timeout-0s-stuck.png
+
+Integration Checks
+- Tray -> Decks navigation via tray menu (View Decks): PASS
+- Cards view -> Collins generate -> Save to Deck: PASS
+- Settings panel save during active app flow: PASS
+- Review popup reveal/rate progression (Card 1 -> Card 2): PASS
+- Auto-dismiss/no-response scheduling progression: FAIL in web demo
+
+Result
+Scenarios [8/9 pass] | Integration [4/5] | Edge Cases [2 tested] | VERDICT: FAIL (timeout/no-response behavior blocked)

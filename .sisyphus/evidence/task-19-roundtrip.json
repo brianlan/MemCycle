@@ -1,0 +1,143 @@
+{
+  "version": "1.0",
+  "exportedAt": "2026-02-21T14:58:41Z",
+  "decks": [
+    {
+      "id": "task12_deck",
+      "name": "Task12 Deck",
+      "description": "",
+      "createdAt": "2026-02-21T14:02:06.931Z",
+      "updatedAt": "2026-02-21T14:02:06.931Z"
+    },
+    {
+      "id": "task19_deck_2",
+      "name": "Task19 Deck 2",
+      "description": "evidence deck",
+      "createdAt": "2026-02-21T14:57:31.000Z",
+      "updatedAt": "2026-02-21T14:57:31.000Z"
+    }
+  ],
+  "cards": [
+    {
+      "id": "task12_card_y",
+      "deckId": "task12_deck",
+      "front": "front y",
+      "back": "back y",
+      "source": "default",
+      "createdAt": "2026-02-21T14:02:06.935Z",
+      "updatedAt": "2026-02-21T14:02:06.935Z",
+      "scheduling": {
+        "id": "task12_card_y",
+        "cardId": "task12_card_y",
+        "algorithm": "sm2",
+        "repetitions": 0,
+        "intervalDays": 0,
+        "easeFactor": 2.5,
+        "boxIndex": 0,
+        "dueAt": "2026-02-20T14:02:06.935Z",
+        "lastReviewedAt": null,
+        "lapseCount": 0,
+        "reviewCount": 0
+      }
+    },
+    {
+      "id": "task12_card_n",
+      "deckId": "task12_deck",
+      "front": "front n",
+      "back": "back n",
+      "source": "default",
+      "createdAt": "2026-02-21T14:02:06.935Z",
+      "updatedAt": "2026-02-21T14:02:06.935Z",
+      "scheduling": {
+        "id": "task12_card_n",
+        "cardId": "task12_card_n",
+        "algorithm": "sm2",
+        "repetitions": 0,
+        "intervalDays": 0,
+        "easeFactor": 2.5,
+        "boxIndex": 0,
+        "dueAt": "2026-02-21T14:02:06.935Z",
+        "lastReviewedAt": null,
+        "lapseCount": 0,
+        "reviewCount": 0
+      }
+    },
+    {
+      "id": "task12_card_t",
+      "deckId": "task12_deck",
+      "front": "front t",
+      "back": "back t",
+      "source": "default",
+      "createdAt": "2026-02-21T14:02:06.935Z",
+      "updatedAt": "2026-02-21T14:02:06.935Z",
+      "scheduling": {
+        "id": "task12_card_t",
+        "cardId": "task12_card_t",
+        "algorithm": "sm2",
+        "repetitions": 0,
+        "intervalDays": 0,
+        "easeFactor": 2.5,
+        "boxIndex": 0,
+        "dueAt": "2026-02-22T14:02:06.936Z",
+        "lastReviewedAt": null,
+        "lapseCount": 0,
+        "reviewCount": 0
+      }
+    },
+    {
+      "id": "task19_card_a",
+      "deckId": "task19_deck_2",
+      "front": "deck2 front a",
+      "back": "deck2 back a",
+      "source": "default",
+      "createdAt": "2026-02-21T14:57:31.000Z",
+      "updatedAt": "2026-02-21T14:57:31.000Z",
+      "scheduling": {
+        "id": "task19_sched_a",
+        "cardId": "task19_card_a",
+        "algorithm": "sm2",
+        "repetitions": 1,
+        "intervalDays": 1,
+        "easeFactor": 2.5,
+        "boxIndex": 0,
+        "dueAt": "2026-02-21T14:57:31.000Z",
+        "lastReviewedAt": null,
+        "lapseCount": 0,
+        "reviewCount": 1
+      }
+    },
+    {
+      "id": "task19_card_b",
+      "deckId": "task19_deck_2",
+      "front": "deck2 front b",
+      "back": "deck2 back b",
+      "source": "default",
+      "createdAt": "2026-02-21T14:57:31.000Z",
+      "updatedAt": "2026-02-21T14:57:31.000Z",
+      "scheduling": {
+        "id": "task19_sched_b",
+        "cardId": "task19_card_b",
+        "algorithm": "leitner",
+        "repetitions": 2,
+        "intervalDays": 3,
+        "easeFactor": 2.5,
+        "boxIndex": 1,
+        "dueAt": "2026-02-21T14:57:31.000Z",
+        "lastReviewedAt": "2026-02-21T14:57:31.000Z",
+        "lapseCount": 0,
+        "reviewCount": 2
+      }
+    }
+  ],
+  "reviewLogs": [
+    {
+      "id": "task12_log",
+      "cardId": "task12_card_n",
+      "reviewedAt": "2026-02-21T14:02:06.937Z",
+      "rating": 4,
+      "responseType": "rated",
+      "elapsedMs": 0
+    }
+  ],
+  "settings": {}
+}

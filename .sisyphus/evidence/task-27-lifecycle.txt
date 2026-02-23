@@ -1,0 +1,1 @@
+Verified app lifecycle in web run: launch succeeds, onboarding gate applied, reload persists app shell and settings storage.

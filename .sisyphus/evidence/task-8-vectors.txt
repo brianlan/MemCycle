@@ -1,0 +1,36 @@
+$ bun -e <sm2 vectors>
+
+{
+  "vector1": {
+    "input": {
+      "rating": 4,
+      "easeFactor": 2.5,
+      "intervalDays": 1,
+      "repetitions": 1
+    },
+    "output": {
+      "intervalDays": 6,
+      "easeFactor": 2.6
+    }
+  },
+  "vector2": {
+    "input": {
+      "rating": 1,
+      "intervalDays": 30
+    },
+    "output": {
+      "intervalDays": 1
+    }
+  },
+  "vector3": {
+    "input": {
+      "easeFactor": 1.3,
+      "rating": 1
+    },
+    "output": {
+      "easeFactor": 1.3
+    }
+  }
+}
+
+exit_code=0

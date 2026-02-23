@@ -1,0 +1,20 @@
+Task: 11 - Card filtering evidence
+Date: 2026-02-21
+
+Filtering implementation:
+- getCards(deckId?) supports optional deck filter
+
+SQL used:
+- Without deck filter:
+  SELECT id, deck_id, front, back, source, created_at, updated_at
+  FROM cards
+  ORDER BY created_at DESC
+- With deck filter:
+  SELECT id, deck_id, front, back, source, created_at, updated_at
+  FROM cards
+  WHERE deck_id = $1
+  ORDER BY created_at DESC
+
+Behavior ensured by implementation:
+- getCards() returns all cards across decks
+- getCards(deckId) returns only cards belonging to that deck

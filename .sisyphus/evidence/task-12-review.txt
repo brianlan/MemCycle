@@ -1,0 +1,10 @@
+Task 12 - Rated review log evidence
+
+Database:
+$HOME/Library/Application Support/com.memcycle.flashcard/app.db
+
+Command:
+sqlite3 "$HOME/Library/Application Support/com.memcycle.flashcard/app.db" "PRAGMA foreign_keys=ON; DELETE FROM review_logs WHERE id='task12_log'; INSERT INTO review_logs (id,card_id,reviewed_at,rating,response_type,elapsed_ms) VALUES ('task12_log','task12_card_n',strftime('%Y-%m-%dT%H:%M:%fZ','now'),4,'rated',0); SELECT id || '|' || card_id || '|' || rating || '|' || response_type FROM review_logs WHERE id='task12_log';"
+
+Output:
+task12_log|task12_card_n|4|rated

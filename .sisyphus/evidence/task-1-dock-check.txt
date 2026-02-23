@@ -1,0 +1,27 @@
+# Task 1 - Dock Check Evidence
+
+## Command
+
+Built app:
+`/Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app`
+
+```bash
+open -a "/Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app"
+sleep 3
+osascript -e 'tell application "System Events" to get name of every process whose visible is true'
+```
+
+## Output
+
+```text
+Google Chrome, iTerm2, Safari, Typora, Code - Insiders, Notes, X11.bin, Finder, Feishu, WeChat, Downie 4
+```
+
+## Result
+
+`MemCycle` is not in the visible-process list, so it does not appear in the Dock.
+
+## Relevant Implementation
+
+`src-tauri/src/lib.rs` sets:
+`app.set_activation_policy(tauri::ActivationPolicy::Accessory);`

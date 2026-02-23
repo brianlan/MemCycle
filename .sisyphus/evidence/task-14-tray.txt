@@ -1,0 +1,21 @@
+$ . "$HOME/.cargo/env" && bun run tauri build --debug
+$ tauri build --debug
+Info Looking up installed tauri packages to check mismatched versions...
+Running beforeBuildCommand `bun run build`
+$ tsc && vite build
+vite v7.3.1 building client environment for production...
+✓ 499 modules transformed.
+✓ built in 1.95s
+Compiling memcycle v0.1.0 (/Users/rlan/projects/MemCycle/src-tauri)
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 46s
+Built application at: /Users/rlan/projects/MemCycle/src-tauri/target/debug/memcycle
+Bundling MemCycle.app (/Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app)
+Finished 1 bundle at:
+/Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app
+
+$ . "$HOME/.cargo/env" && "./src-tauri/target/debug/memcycle" & APP_PID=$!; sleep 5; osascript -e 'tell application "System Events" to tell process "SystemUIServer" to get description of every menu bar item of menu bar 1'; kill "$APP_PID"; wait "$APP_PID" 2>/dev/null; true
+73:84: execution error: System Events got an error: Can’t get menu bar 1 of process "SystemUIServer". Invalid index. (-1719)
+
+Notes:
+- Build verification passed.
+- AppleScript menu bar enumeration failed in this environment due System Events UI-scripting access/indexing, but command/output is captured here as required evidence.

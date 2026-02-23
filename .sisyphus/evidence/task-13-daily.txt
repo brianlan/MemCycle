@@ -1,0 +1,12 @@
+Task 13 daily reset implementation evidence
+
+- Daily counting is computed at query time with UTC day boundaries:
+  - day start: YYYY-MM-DDT00:00:00.000Z
+  - next day start: +24h
+- no-response count queries filter with:
+  - reviewed_at >= dayStartUtc
+  - reviewed_at < nextDayStartUtc
+- This naturally resets no-response caps at UTC midnight without cron/jobs.
+- Deferred-card query includes:
+  - cards deferred in the future with no_response activity today
+  - cards marked await-session by due_at == nextDayStartUtc

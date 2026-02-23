@@ -1,0 +1,13 @@
+Task 13 backoff implementation evidence
+
+- Added src/lib/services/noResponseHandler.ts
+- recordNoResponse inserts review_logs row with:
+  - response_type = 'no_response'
+  - rating = 0 (schema-compatible INTEGER NOT NULL sentinel)
+  - elapsed_ms = 0
+  - reviewed_at = current ISO timestamp
+- Backoff handling:
+  - 1st no-response today -> +10 minutes
+  - 2nd no-response today -> +20 minutes
+  - 3rd+ no-response today -> await-session marker via due_at = next UTC midnight
+- shouldShowCard returns false when count(no_response today, per card) >= 3

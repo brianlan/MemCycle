@@ -1,0 +1,12 @@
+Task 12 - Due cards query evidence
+
+Database:
+$HOME/Library/Application Support/com.memcycle.flashcard/app.db
+
+Command:
+sqlite3 "$HOME/Library/Application Support/com.memcycle.flashcard/app.db" "PRAGMA foreign_keys=ON; DELETE FROM review_logs WHERE id='task12_log'; DELETE FROM review_logs WHERE card_id IN ('task12_card_y','task12_card_n','task12_card_t'); DELETE FROM card_scheduling WHERE card_id IN ('task12_card_y','task12_card_n','task12_card_t'); DELETE FROM cards WHERE id IN ('task12_card_y','task12_card_n','task12_card_t'); DELETE FROM decks WHERE id='task12_deck'; INSERT INTO decks (id,name,description,created_at,updated_at) VALUES ('task12_deck','Task12 Deck','',strftime('%Y-%m-%dT%H:%M:%fZ','now'),strftime('%Y-%m-%dT%H:%M:%fZ','now')); INSERT INTO cards (id,deck_id,front,back,source,created_at,updated_at) VALUES ('task12_card_y','task12_deck','front y','back y','default',strftime('%Y-%m-%dT%H:%M:%fZ','now'),strftime('%Y-%m-%dT%H:%M:%fZ','now')); INSERT INTO cards (id,deck_id,front,back,source,created_at,updated_at) VALUES ('task12_card_n','task12_deck','front n','back n','default',strftime('%Y-%m-%dT%H:%M:%fZ','now'),strftime('%Y-%m-%dT%H:%M:%fZ','now')); INSERT INTO cards (id,deck_id,front,back,source,created_at,updated_at) VALUES ('task12_card_t','task12_deck','front t','back t','default',strftime('%Y-%m-%dT%H:%M:%fZ','now'),strftime('%Y-%m-%dT%H:%M:%fZ','now')); INSERT INTO card_scheduling (id,card_id,algorithm,repetitions,interval_days,ease_factor,box_index,due_at,last_reviewed_at,lapse_count,review_count) VALUES ('task12_card_y','task12_card_y','sm2',0,0,2.5,0,strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 day'),NULL,0,0); INSERT INTO card_scheduling (id,card_id,algorithm,repetitions,interval_days,ease_factor,box_index,due_at,last_reviewed_at,lapse_count,review_count) VALUES ('task12_card_n','task12_card_n','sm2',0,0,2.5,0,strftime('%Y-%m-%dT%H:%M:%fZ','now'),NULL,0,0); INSERT INTO card_scheduling (id,card_id,algorithm,repetitions,interval_days,ease_factor,box_index,due_at,last_reviewed_at,lapse_count,review_count) VALUES ('task12_card_t','task12_card_t','sm2',0,0,2.5,0,strftime('%Y-%m-%dT%H:%M:%fZ','now','+1 day'),NULL,0,0); SELECT c.id || '|' || s.due_at FROM cards c JOIN card_scheduling s ON s.card_id=c.id WHERE s.algorithm='sm2' ORDER BY s.due_at ASC;"
+
+Output:
+task12_card_y|2026-02-20T14:02:06.935Z
+task12_card_n|2026-02-21T14:02:06.935Z
+task12_card_t|2026-02-22T14:02:06.936Z

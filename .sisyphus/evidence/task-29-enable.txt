@@ -1,0 +1,10 @@
+Added login item via AppleScript and listed login items.
+
+stdout:
+add_rc=0 add_out=login item MemCycle
+ add_err=
+list=MiniMax, popup_reminder, Scroll Reverser, TypeWhisper, MemCycle, ZeroTier, AlDente, Rectangle, Snipaste
+
+stderr:
+
+exit_code=0

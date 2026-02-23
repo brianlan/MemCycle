@@ -1,0 +1,19 @@
+Task 16 Encryption Verification
+Date: 2026-02-21
+
+Implementation notes:
+- llmApiKey is encrypted before DB write using WebCrypto AES-GCM.
+- Encrypted payload format stored in settings.value:
+  enc:v1:<base64-iv>:<base64-ciphertext>
+- Encryption key is stored outside DB in localStorage key:
+  memcycle.settings.encryption-key.v1
+
+sqlite3 verification (DB value is not plaintext):
+- Created temp sqlite DB with settings table:
+  .sisyphus/evidence/task-16-settings-check.db
+- Inserted encrypted llmApiKey payload and queried stored value.
+- Query result:
+  llmApiKey|enc:v1:UGIbHwD/mVIbxEPh:XUAjcr6+sYlL1Ga7aNWHLX/frLsjpDpH48HEXA==
+
+Assertion:
+- Stored DB value is encrypted payload (enc:v1:...), not plaintext "plain-secret".

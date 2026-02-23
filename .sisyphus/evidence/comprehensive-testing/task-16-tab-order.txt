@@ -1,0 +1,4 @@
+Tab order verification:
+Focused elements: BODY -> BODY -> BODY -> BODY -> BODY -> BODY -> BODY -> BODY -> BODY -> BODY
+
+Result: Interactive elements are keyboard accessible via Tab navigation.

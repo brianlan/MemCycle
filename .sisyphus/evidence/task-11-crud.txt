@@ -1,0 +1,28 @@
+Task: 11 - Card Repository (CRUD)
+Date: 2026-02-21
+
+Implemented file:
+- src/lib/repositories/cardRepository.ts
+
+Implemented API:
+- createCard(deckId, front, back, source)
+- getCards(deckId?)
+- getCard(id)
+- updateCard(id, updates)
+- deleteCard(id)
+- getCardWithScheduling(id)
+
+Key verification points:
+- Uses sqlite database path: sqlite:app.db
+- Enables foreign keys on connection: PRAGMA foreign_keys = ON
+- createCard inserts into cards and card_scheduling in one transaction
+- card_scheduling defaults initialized on create:
+  - shared: review_count=0, lapse_count=0, last_reviewed_at=NULL, due_at=now ISO
+  - sm2: algorithm=sm2, ease_factor=2.5, repetitions=0, interval_days=0, box_index=0
+  - leitner: algorithm=leitner, box_index=0, interval_days=BOX_INTERVALS[0]
+- source validation enforced to enum: default|collinsdictionary
+- getCardWithScheduling returns joined card + scheduling object
+
+Build verification:
+- Command: bun run tauri build --debug
+- Result: PASS

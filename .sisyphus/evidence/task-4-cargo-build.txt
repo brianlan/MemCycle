@@ -1,0 +1,18 @@
+# Task 4 Evidence: Rust Command Stubs
+
+## cargo build
+- Status: SUCCESS
+- Output: Finished `dev` profile [unoptimized + debuginfo] target(s) in 27.80s
+
+## tauri build --debug
+- Status: SUCCESS
+- Built application at: /Users/rlan/projects/MemCycle/src-tauri/target/debug/memcycle
+- Bundled: /Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app
+
+## Created Commands
+- deck.rs: create_deck, get_decks, update_deck, delete_deck
+- card.rs: create_card, get_cards, update_card, delete_card
+- review.rs: get_due_cards, submit_review, record_no_response
+- settings.rs: get_settings, update_setting
+- export.rs: export_data, import_data
+- llm.rs: generate_definition

@@ -1,0 +1,30 @@
+Task 19 validation cases
+
+invalid_payload_a: isValid=false
+- version must be '1.0'
+
+invalid_payload_b: isValid=false
+- cards[0].deckId must reference an existing deck id
+- cards[0].front must be a string
+- cards[0].source must be 'default' or 'collinsdictionary'
+- cards[0].createdAt must be an ISO date string
+- cards[0].updatedAt must be an ISO date string
+- cards[0].scheduling.id must be a non-empty string
+- cards[0].scheduling.cardId must match cards[0].id
+- cards[0].scheduling.algorithm must be 'sm2' or 'leitner'
+- cards[0].scheduling.repetitions must be a number
+- cards[0].scheduling.intervalDays must be a number
+- cards[0].scheduling.easeFactor must be a number
+- cards[0].scheduling.boxIndex must be a number
+- cards[0].scheduling.dueAt must be an ISO date string
+- cards[0].scheduling.lastReviewedAt must be null or an ISO date string
+- cards[0].scheduling.lapseCount must be a number
+- cards[0].scheduling.reviewCount must be a number
+- reviewLogs[0].id must be a non-empty string
+- reviewLogs[0].cardId must reference an existing card id
+- reviewLogs[0].reviewedAt must be an ISO date string
+- reviewLogs[0].rating must be one of 1,2,3,4
+- reviewLogs[0].responseType must be 'rated', 'no_response', or 'skipped'
+- reviewLogs[0].elapsedMs must be a number
+- settings must not include llmApiKey
+- settings.popupIntervalMinutes must be a string

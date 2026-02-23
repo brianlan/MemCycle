@@ -1,0 +1,9 @@
+Migration idempotency test:
+
+Launch 1: Opened MemCycle.app - database created and migration 0001 applied
+Launch 2: Opened MemCycle.app again - no errors, migration already applied
+
+The tauri-plugin-sql automatically tracks applied migrations in _sqlx_migrations table.
+Running the app multiple times does not re-apply migrations or cause errors.
+
+DB path: ~/Library/Application Support/com.memcycle.flashcard/app.db

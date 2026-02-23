@@ -1,0 +1,12 @@
+Task: 10. Deck delete cascade verification
+Date: 2026-02-21
+
+Command:
+`sqlite3 "$HOME/Library/Application Support/com.memcycle.flashcard/app.db" "PRAGMA foreign_keys = ON; INSERT INTO decks (id, name, description, created_at, updated_at) VALUES ('task10-deck', 'Task10 Cascade Deck', 'cascade-check', datetime('now'), datetime('now')); INSERT INTO cards (id, deck_id, front, back, source, created_at, updated_at) VALUES ('task10-card', 'task10-deck', 'front', 'back', 'default', datetime('now'), datetime('now')); SELECT 'before', (SELECT COUNT(*) FROM decks WHERE id = 'task10-deck'), (SELECT COUNT(*) FROM cards WHERE id = 'task10-card'); DELETE FROM decks WHERE id = 'task10-deck'; SELECT 'after', (SELECT COUNT(*) FROM decks WHERE id = 'task10-deck'), (SELECT COUNT(*) FROM cards WHERE id = 'task10-card');"`
+
+Output:
+- `before|1|1`
+- `after|0|0`
+
+Conclusion:
+- Deleting a row in `decks` removes dependent rows in `cards` via `ON DELETE CASCADE` when foreign keys are enabled.

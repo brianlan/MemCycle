@@ -1,0 +1,15 @@
+Task 15 popup timeout validation (2026-02-21)
+
+Validation approach:
+1) Code-path validation in `src-tauri/src/popup.rs`:
+   - `show_popup` spawns a background timer thread with `sleep(Duration::from_secs(30))`.
+   - Timeout checks nonce to avoid stale timers after repeated show/hide calls.
+   - On active timeout, popup window is hidden and `popup:timeout` + `popup:dismissed` are emitted.
+   - Popup window is created with frameless/always-on-top options and transparent background color (`Color(0, 0, 0, 0)`).
+2) Runtime smoke:
+   - Ran `bun run tauri dev` and confirmed Rust app compiled and launched (`Finished dev profile`, `Running target/debug/memcycle`).
+3) Build verification:
+   - Ran `bun run tauri build --debug` and confirmed bundle output at `src-tauri/target/debug/bundle/macos/MemCycle.app`.
+
+Result:
+- Timeout implementation is present, compiled, and included in debug build artifact.

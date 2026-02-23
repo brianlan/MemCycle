@@ -1,0 +1,8 @@
+Queried login items in separate check for persistence.
+
+stdout:
+MiniMax, popup_reminder, Scroll Reverser, TypeWhisper, MemCycle, ZeroTier, AlDente, Rectangle, Snipaste
+
+stderr:
+
+exit_code=0

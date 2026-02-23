@@ -1,0 +1,13 @@
+Cards view tab navigation:
+1. button (Toggle Tray)
+2. button (Settings)
+3. button: Dictionary
+4. button: Create Card
+5. button: Start Review
+6. button: Create Card
+7. button: Open CollinsDictiona
+8. button: Open Settings
+9. body: MemCycle DemoDecksCa
+10. button: Decks
+
+Result: 9 interactive elements found and reachable via keyboard.

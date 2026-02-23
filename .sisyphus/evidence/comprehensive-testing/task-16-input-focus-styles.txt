@@ -1,0 +1,14 @@
+Focus indicator styles on Front input:
+{
+  "outline": "5px none rgb(0, 103, 244)",
+  "outlineWidth": "5px",
+  "outlineColor": "rgb(0, 103, 244)",
+  "outlineStyle": "none",
+  "outlineOffset": "-2px",
+  "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklch(1 0 0) 0px 0px 0px 2px, oklch(0.708 0 0) 0px 0px 0px 4px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+  "ringWidth": ""
+}
+
+Has visible focus: true
+
+Result: Input elements have visible focus indicators when keyboard focused.

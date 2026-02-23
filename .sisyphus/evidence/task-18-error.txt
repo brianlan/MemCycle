@@ -1,0 +1,12 @@
+Task 18 - PostgreSQL error handling evidence
+Date: 2026-02-21
+
+Command: bun -e "import { connectRemote, testConnection } from './src/lib/repositories/remoteDb.ts'; ..."
+Output:
+- no-config false
+- invalid-port Remote database port must be between 1 and 65535
+
+Interpretation:
+- testConnection returns false when remote configuration is missing.
+- connectRemote validates port range and returns a user-facing error.
+- Failure paths are handled without uncaught exceptions.

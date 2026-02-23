@@ -1,0 +1,5 @@
+Review popup number keys test:
+- Number keys (1-4) for rating: Check
+- Keys advanced through cards: Check
+
+Result: Number keys properly trigger rating actions.

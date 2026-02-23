@@ -1,0 +1,15 @@
+Task 28 Keyboard Shortcuts Implementation
+
+Implemented centralized keyboard shortcut handling via `src/lib/hooks/useKeyboardShortcuts.ts`.
+
+Components updated:
+- ReviewPopup.tsx: Uses `useKeyboardShortcuts` hook with `reviewPopupShortcuts` for Space/Enter reveal, 1-4 ratings, Escape dismiss.
+- CardForm.tsx: Uses `useKeyboardShortcuts` hook with `cardFormShortcuts` for Cmd+Enter save, Escape cancel.
+- App.tsx: Uses `useKeyboardShortcuts` hook with `globalShortcuts` for Cmd+, (settings), Cmd+N (new card).
+
+UI hints added:
+- ReviewPopup: Space hint on "Show Answer" button.
+- CardForm: Cmd+Enter hint on footer, Escape hint on Cancel button.
+- RatingButtons: 1-4 hints on rating buttons.
+
+Tests: All 15 e2e tests pass, including Cmd+Enter save test and review popup flow.

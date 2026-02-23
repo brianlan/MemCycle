@@ -1,0 +1,4 @@
+$ bunx tsc --noEmit --pretty false --skipLibCheck .sisyphus/evidence/tmp-task3-imports.ts
+
+
+exit_code=0

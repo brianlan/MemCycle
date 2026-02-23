@@ -1,0 +1,43 @@
+# Task 1 Build Output - Tauri Scaffold
+
+## Build Command
+`bun run tauri build --debug`
+
+## Result: SUCCESS (exit code 0)
+
+## Key Output Lines
+```
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.64s
+Built application at: /Users/rlan/projects/MemCycle/src-tauri/target/debug/memcycle
+Bundling MemCycle.app (/Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app)
+Bundling MemCycle_0.1.0_aarch64.dmg (/Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/dmg/MemCycle_0.1.0_aarch64.dmg)
+Finished 2 bundles at:
+    /Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app
+    /Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/dmg/MemCycle_0.1.0_aarch64.dmg
+```
+
+## Fix Applied
+- Changed `src-tauri/capabilities/default.json`: replaced `opener:default` (invalid) with `sql:default`
+- Changed `src-tauri/tauri.conf.json` identifier: `com.memcycle.app` -> `com.memcycle.flashcard` (warning: `.app` suffix conflicts with macOS bundle extension)
+
+---
+
+## Update 2026-02-21 (DMG workaround)
+### Issue
+DMG bundling step fails (`Running bundle_dmg.sh` error) in this environment.
+
+### Fix Applied
+- Changed `src-tauri/tauri.conf.json` bundle targets from `"all"` to `["app"]` to build .app only (skip DMG)
+- Removed unused `use tauri::Emitter;` import in `src-tauri/src/lib.rs`
+
+### New Build Output
+```
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.25s
+Built application at: /Users/rlan/projects/MemCycle/src-tauri/target/debug/memcycle
+Bundling MemCycle.app (/Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app)
+Finished 1 bundle at:
+    /Users/rlan/projects/MemCycle/src-tauri/target/debug/bundle/macos/MemCycle.app
+```
+
+### Note
+DMG temporarily disabled for Task 1. Task 30 (App bundle and signing) will re-enable DMG bundling.

@@ -1,0 +1,36 @@
+$ bun -e <leitner vectors>
+
+{
+  "vector1": {
+    "input": {
+      "boxIndex": 0,
+      "correct": true
+    },
+    "output": {
+      "boxIndex": 1,
+      "intervalDays": 3
+    }
+  },
+  "vector2": {
+    "input": {
+      "boxIndex": 2,
+      "correct": false
+    },
+    "output": {
+      "boxIndex": 0,
+      "intervalDays": 1
+    }
+  },
+  "vector3": {
+    "input": {
+      "boxIndex": 4,
+      "correct": true
+    },
+    "output": {
+      "boxIndex": 4,
+      "intervalDays": 30
+    }
+  }
+}
+
+exit_code=0

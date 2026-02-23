@@ -1,0 +1,4 @@
+Escape key test:
+- Closed Review popup: Check
+
+Result: Escape key successfully closes Review popup.

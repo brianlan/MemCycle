@@ -1,0 +1,1 @@
+With textarea focused, pressing 1 inserted literal text and did not trigger review shortcut.

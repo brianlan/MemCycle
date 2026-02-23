@@ -1,0 +1,6 @@
+Card Form modal navigation test:
+- Total tabbable elements: 5
+- Front input is focusable: Check
+- Back input is reachable via Tab: Check
+
+Result: Card Form modal allows keyboard navigation between inputs.

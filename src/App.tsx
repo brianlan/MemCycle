@@ -9,14 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
 import { Card as CardType, Deck, Rating } from "@/lib/types";
-import { BookOpen, Settings, Menu } from "lucide-react";
+import { BookOpen, Settings, Menu, Trash2 } from "lucide-react";
 import { TrayDropdown } from "@/components/TrayDropdown";
 import { getSetting } from "@/lib/services/settingsService";
 import { startTimer } from "@/lib/services/timerService";
 import { calculateStats, getDueCards, submitReview } from "@/lib/services/schedulingService";
 import { recordNoResponse } from "@/lib/services/noResponseHandler";
 import { exportToFile, importFromFile } from "@/lib/services/exportService";
-import { createCard } from "@/lib/repositories/cardRepository";
+import { createCard, deleteCard, getCards } from "@/lib/repositories/cardRepository";
 import { createDeck, deleteDeck, getDecks, updateDeck } from "@/lib/repositories/deckRepository";
 import { hidePopup, showPopup } from "@/lib/popup";
 import { useKeyboardShortcuts, globalShortcuts } from "@/lib/hooks/useKeyboardShortcuts";
@@ -26,7 +26,7 @@ function isTauriRuntimeAvailable(): boolean {
     return false;
   }
 
-  return navigator.userAgent.includes("Tauri");
+  return navigator.userAgent.includes("Tauri") || "__TAURI_INTERNALS__" in window;
 }
 
 const demoReviewCards: CardType[] = [
@@ -56,6 +56,7 @@ function App() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<"sm2" | "leitner">("sm2");
   const [reviewCards, setReviewCards] = useState<CardType[]>([]);
   const [availableDecks, setAvailableDecks] = useState<Deck[]>([]);
+  const [availableCards, setAvailableCards] = useState<CardType[]>([]);
   const [trayStats, setTrayStats] = useState({ dueCount: 5, streakDays: 7 });
   const [activeView, setActiveView] = useState<AppView>("decks");
   const [windowLabel, setWindowLabel] = useState("main");
@@ -69,6 +70,7 @@ function App() {
   const activeReviewIndexRef = useRef(0);
   const noResponseRecordedRef = useRef(false);
   const skipDismissNoResponseRef = useRef(false);
+  const isStartingReviewRef = useRef(false);
 
   const isTauriRuntime = isTauriRuntimeAvailable();
   const isPopupWindow = windowLabel === "popup";
@@ -86,6 +88,23 @@ function App() {
       });
     } catch (error) {
       console.warn("Unable to refresh tray stats", error);
+    }
+  }, []);
+
+  const refreshCards = useCallback(async () => {
+    if (!isTauriRuntimeAvailable()) {
+      return;
+    }
+
+    try {
+      const cards = await getCards();
+      setAvailableCards(cards);
+    } catch (error) {
+      toast({
+        title: "Unable to load cards",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
     }
   }, []);
 
@@ -193,6 +212,19 @@ function App() {
     }
   }, [isPopupWindow, isTauriRuntime, startReviewFlow]);
 
+  const startReviewFlowSafely = useCallback(async () => {
+    if (isStartingReviewRef.current) {
+      return;
+    }
+
+    isStartingReviewRef.current = true;
+    try {
+      await startReviewFlow();
+    } finally {
+      isStartingReviewRef.current = false;
+    }
+  }, [startReviewFlow]);
+
   const handleReviewSubmission = useCallback(
     async (cardId: string, rating: Rating) => {
       if (isTauriRuntime) {
@@ -290,6 +322,80 @@ function App() {
     setIsDictionaryOpen(false);
   }, []);
 
+  const handleDeleteCard = useCallback(
+    async (cardId: string) => {
+      try {
+        if (isTauriRuntime) {
+          await deleteCard(cardId);
+        }
+        setAvailableCards((prev) => prev.filter((card) => card.id !== cardId));
+        toast({
+          title: "Card deleted",
+          description: "The card has been removed.",
+        });
+        await refreshTrayStats();
+      } catch (error) {
+        toast({
+          title: "Unable to delete card",
+          description: error instanceof Error ? error.message : "Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+    [isTauriRuntime, refreshTrayStats],
+  );
+
+  const reconcileSavedCard = useCallback(
+    async (
+      payload: { front: string; back: string; deckId: string },
+      source: "default" | "collinsdictionary",
+    ): Promise<boolean> => {
+      if (!isTauriRuntime) {
+        return false;
+      }
+
+      const nextFront = payload.front.trim();
+      const nextBack = payload.back.trim();
+
+      const attempts = [0, 150, 350];
+
+      try {
+        for (const delayMs of attempts) {
+          if (delayMs > 0) {
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+          }
+
+          const cards = await getCards();
+          const recovered = cards.find(
+            (card) =>
+              card.deckId === payload.deckId &&
+              card.source === source &&
+              card.front.trim() === nextFront &&
+              card.back.trim() === nextBack,
+          );
+
+          if (!recovered) {
+            continue;
+          }
+
+          setAvailableCards((prev) =>
+            prev.some((card) => card.id === recovered.id)
+              ? prev
+              : [recovered, ...prev],
+          );
+
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.warn("Unable to reconcile saved card after error", error);
+        return false;
+      }
+    },
+    [isTauriRuntime],
+  );
+
   const handleQuit = useCallback(async () => {
     if (!isTauriRuntime) {
       return;
@@ -306,6 +412,16 @@ function App() {
   const handleSaveDefaultCard = useCallback(
     async (payload: { front: string; back: string; deckId: string }) => {
       if (!isTauriRuntime) {
+        const created: CardType = {
+          id: crypto.randomUUID(),
+          deckId: payload.deckId,
+          front: payload.front,
+          back: payload.back,
+          source: "default",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setAvailableCards((prev) => [created, ...prev]);
         setIsCreating(false);
         toast({
           title: "Card saved",
@@ -315,14 +431,26 @@ function App() {
       }
 
       try {
-        await createCard(payload.deckId, payload.front, payload.back, "default");
+        const created = await createCard(payload.deckId, payload.front, payload.back, "default");
+        setAvailableCards((prev) => [created, ...prev]);
         setIsCreating(false);
         toast({
           title: "Card saved",
           description: "Your new card has been created.",
         });
-        await refreshTrayStats();
+        void refreshTrayStats().catch((error) => {
+          console.warn("Unable to refresh tray stats after saving card", error);
+        });
       } catch (error) {
+        if (await reconcileSavedCard(payload, "default")) {
+          setIsCreating(false);
+          toast({
+            title: "Card saved",
+            description: "Your new card has been created.",
+          });
+          return;
+        }
+
         toast({
           title: "Unable to save card",
           description: error instanceof Error ? error.message : "Please try again.",
@@ -330,12 +458,22 @@ function App() {
         });
       }
     },
-    [isTauriRuntime, refreshTrayStats],
+    [isTauriRuntime, reconcileSavedCard, refreshTrayStats],
   );
 
   const handleSaveDictionaryCard = useCallback(
     async (payload: { front: string; back: string; deckId: string; source: "collinsdictionary" | "default" }) => {
       if (!isTauriRuntime) {
+        const created: CardType = {
+          id: crypto.randomUUID(),
+          deckId: payload.deckId,
+          front: payload.front,
+          back: payload.back,
+          source: payload.source,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setAvailableCards((prev) => [created, ...prev]);
         setIsDictionaryOpen(false);
         toast({
           title: "Card saved",
@@ -345,14 +483,26 @@ function App() {
       }
 
       try {
-        await createCard(payload.deckId, payload.front, payload.back, payload.source);
+        const created = await createCard(payload.deckId, payload.front, payload.back, payload.source);
+        setAvailableCards((prev) => [created, ...prev]);
         setIsDictionaryOpen(false);
         toast({
           title: "Card saved",
           description: "Dictionary card added successfully.",
         });
-        await refreshTrayStats();
+        void refreshTrayStats().catch((error) => {
+          console.warn("Unable to refresh tray stats after saving dictionary card", error);
+        });
       } catch (error) {
+        if (await reconcileSavedCard(payload, payload.source)) {
+          setIsDictionaryOpen(false);
+          toast({
+            title: "Card saved",
+            description: "Dictionary card added successfully.",
+          });
+          return;
+        }
+
         toast({
           title: "Unable to save card",
           description: error instanceof Error ? error.message : "Please try again.",
@@ -360,7 +510,7 @@ function App() {
         });
       }
     },
-    [isTauriRuntime, refreshTrayStats],
+    [isTauriRuntime, reconcileSavedCard, refreshTrayStats],
   );
 
   useEffect(() => {
@@ -377,6 +527,14 @@ function App() {
       }
     })();
   }, [isTauriRuntime]);
+
+  useEffect(() => {
+    if (!isTauriRuntime) {
+      return;
+    }
+
+    void refreshCards();
+  }, [isTauriRuntime, refreshCards]);
 
   useEffect(() => {
     if (!isTauriRuntime) {
@@ -461,7 +619,7 @@ function App() {
 
         if (isPopupWindow) {
           await register("popup:shown", () => {
-            void startReviewFlow();
+            void startReviewFlowSafely();
           });
 
           await register("popup:timeout", () => {
@@ -504,7 +662,15 @@ function App() {
         unlisten();
       }
     };
-  }, [handleNoResponseClose, isPopupWindow, isTauriRuntime, openDecksView, startReviewFlow, triggerReviewFlow]);
+  }, [handleNoResponseClose, isPopupWindow, isTauriRuntime, openDecksView, startReviewFlowSafely, triggerReviewFlow]);
+
+  useEffect(() => {
+    if (!isTauriRuntime || !isPopupWindow) {
+      return;
+    }
+
+    void startReviewFlowSafely();
+  }, [isPopupWindow, isTauriRuntime, startReviewFlowSafely]);
 
   if (isTauriRuntime && isPopupWindow) {
     return (
@@ -519,7 +685,11 @@ function App() {
               void handleNoResponseClose("dismissed");
             }}
           />
-        ) : null}
+        ) : (
+          <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
+            Preparing review...
+          </div>
+        )}
         <Toaster />
       </main>
     );
@@ -554,23 +724,51 @@ function App() {
             initialDecks={availableDecks}
             onCreateDeck={async (data) => {
               try {
-                const deck = await createDeck(data.name, data.description);
+                const deck = isTauriRuntime
+                  ? await createDeck(data.name, data.description)
+                  : {
+                      id: crypto.randomUUID(),
+                      name: data.name,
+                      description: data.description,
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString(),
+                    };
                 setAvailableDecks((prev) => [...prev, deck]);
                 toast({ title: "Deck created", description: `"${data.name}" has been saved.` });
                 return deck;
               } catch (error) {
                 console.error("Failed to create deck:", error);
-                toast({
-                  title: "Failed to create deck",
-                  description: error instanceof Error ? error.message : "Please try again.",
-                  variant: "destructive",
-                });
-                throw error;
+                if (isTauriRuntime) {
+                  toast({
+                    title: "Failed to create deck",
+                    description: error instanceof Error ? error.message : "Please try again.",
+                    variant: "destructive",
+                  });
+                  throw error;
+                }
+
+                const fallbackDeck: Deck = {
+                  id: crypto.randomUUID(),
+                  name: data.name,
+                  description: data.description,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                };
+                setAvailableDecks((prev) => [...prev, fallbackDeck]);
+                return fallbackDeck;
               }
             }}
             onUpdateDeck={async (id, data) => {
               try {
-                const deck = await updateDeck(id, data);
+                const deck = isTauriRuntime
+                  ? await updateDeck(id, data)
+                  : {
+                      id,
+                      name: data.name,
+                      description: data.description,
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString(),
+                    };
                 setAvailableDecks((prev) =>
                   prev.map((d) => (d.id === deck.id ? deck : d))
                 );
@@ -578,27 +776,45 @@ function App() {
                 return deck;
               } catch (error) {
                 console.error("Failed to update deck:", error);
-                toast({
-                  title: "Failed to update deck",
-                  description: error instanceof Error ? error.message : "Please try again.",
-                  variant: "destructive",
-                });
-                throw error;
+                if (isTauriRuntime) {
+                  toast({
+                    title: "Failed to update deck",
+                    description: error instanceof Error ? error.message : "Please try again.",
+                    variant: "destructive",
+                  });
+                  throw error;
+                }
+
+                const fallbackDeck: Deck = {
+                  id,
+                  name: data.name,
+                  description: data.description,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                };
+                setAvailableDecks((prev) =>
+                  prev.map((d) => (d.id === id ? { ...d, ...fallbackDeck } : d))
+                );
+                return fallbackDeck;
               }
             }}
             onDeleteDeck={async (id) => {
               try {
-                await deleteDeck(id);
+                if (isTauriRuntime) {
+                  await deleteDeck(id);
+                }
                 setAvailableDecks((prev) => prev.filter((d) => d.id !== id));
                 toast({ title: "Deck deleted", description: "The deck has been removed." });
               } catch (error) {
                 console.error("Failed to delete deck:", error);
-                toast({
-                  title: "Failed to delete deck",
-                  description: error instanceof Error ? error.message : "Please try again.",
-                  variant: "destructive",
-                });
-                throw error;
+                if (isTauriRuntime) {
+                  toast({
+                    title: "Failed to delete deck",
+                    description: error instanceof Error ? error.message : "Please try again.",
+                    variant: "destructive",
+                  });
+                  throw error;
+                }
               }
             }}
           />
@@ -613,6 +829,36 @@ function App() {
               <Button variant="outline" onClick={openDictionaryCardCreator}>Open CollinsDictionary</Button>
               <Button variant="ghost" onClick={() => setIsSettingsOpen(true)}>Open Settings</Button>
             </div>
+            {availableCards.length === 0 ? (
+              <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground" data-testid="cards-empty-state">
+                No cards yet. Create your first card.
+              </div>
+            ) : (
+              <div className="space-y-3" data-testid="cards-list">
+                {availableCards.map((card) => {
+                  const deckName = availableDecks.find((deck) => deck.id === card.deckId)?.name ?? "Unknown deck";
+
+                  return (
+                    <div key={card.id} className="rounded-md border p-4 space-y-2" data-testid={`card-item-${card.id}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-xs text-muted-foreground">{deckName}</div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => void handleDeleteCard(card.id)}
+                          aria-label={`Delete card ${card.id}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </Button>
+                      </div>
+                      <div className="font-medium line-clamp-2">{card.front}</div>
+                      <div className="text-sm text-muted-foreground line-clamp-2">{card.back}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
         )}
       </div>

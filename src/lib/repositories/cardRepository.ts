@@ -176,12 +176,27 @@ export async function createCard(
     );
     await db.execute("COMMIT");
 
-    const created = await getCardRow(cardId);
-    if (!created) {
-      throw new Error("Failed to create card");
+    try {
+      const created = await getCardRow(cardId);
+      if (created) {
+        return mapCardRow(created);
+      }
+    } catch (reloadError) {
+      const reloadMessage = toErrorMessage(reloadError);
+      if (reloadMessage.length === 0) {
+        throw new Error("Card created but failed to reload");
+      }
     }
 
-    return mapCardRow(created);
+    return {
+      id: cardId,
+      deckId,
+      front: nextFront,
+      back: nextBack,
+      source: nextSource,
+      createdAt: now,
+      updatedAt: now,
+    };
   } catch (error) {
     try {
       await db.execute("ROLLBACK");

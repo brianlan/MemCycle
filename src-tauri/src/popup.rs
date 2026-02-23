@@ -7,6 +7,8 @@ use tauri::{
 };
 
 pub const POPUP_WINDOW_LABEL: &str = "popup";
+const POPUP_WIDTH: i32 = 400;
+const POPUP_HEIGHT: i32 = 500;
 
 #[derive(Default)]
 pub struct PopupState {
@@ -20,6 +22,35 @@ fn lock_nonce(state: &PopupState) -> Result<std::sync::MutexGuard<'_, u64>, Stri
         .map_err(|_| "failed to lock popup state".to_string())
 }
 
+fn center_popup_window(app: &AppHandle, window: &WebviewWindow) -> Result<(), String> {
+    let monitor = if let Some(main_window) = app.get_webview_window("main") {
+        main_window
+            .current_monitor()
+            .map_err(|err| format!("failed to query main window monitor: {err}"))?
+            .or(
+                app.primary_monitor()
+                    .map_err(|err| format!("failed to query primary monitor: {err}"))?,
+            )
+    } else {
+        app.primary_monitor()
+            .map_err(|err| format!("failed to query primary monitor: {err}"))?
+    };
+
+    if let Some(monitor) = monitor {
+        let monitor_size = monitor.size();
+        let monitor_position = monitor.position();
+
+        let x = monitor_position.x + ((monitor_size.width as i32 - POPUP_WIDTH) / 2).max(0);
+        let y = monitor_position.y + ((monitor_size.height as i32 - POPUP_HEIGHT) / 2).max(0);
+
+        window
+            .set_position(Position::Physical(PhysicalPosition::new(x, y)))
+            .map_err(|err| format!("failed to position popup window: {err}"))?;
+    }
+
+    Ok(())
+}
+
 fn ensure_popup_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     if let Some(window) = app.get_webview_window(POPUP_WINDOW_LABEL) {
         return Ok(window);
@@ -27,7 +58,7 @@ fn ensure_popup_window(app: &AppHandle) -> Result<WebviewWindow, String> {
 
     let window = tauri::WebviewWindowBuilder::new(app, POPUP_WINDOW_LABEL, WebviewUrl::App("index.html".into()))
         .title("MemCycle Popup")
-        .inner_size(400.0, 300.0)
+        .inner_size(POPUP_WIDTH as f64, POPUP_HEIGHT as f64)
         .resizable(false)
         .decorations(false)
         .background_color(Color(0, 0, 0, 0))
@@ -37,24 +68,15 @@ fn ensure_popup_window(app: &AppHandle) -> Result<WebviewWindow, String> {
         .build()
         .map_err(|err| format!("failed to build popup window: {err}"))?;
 
-    if let Some(monitor) = app
-        .primary_monitor()
-        .map_err(|err| format!("failed to query monitor: {err}"))?
-    {
-        let width = monitor.size().width as i32;
-        let x = (width - 420).max(0);
-        let y = 40;
-
-        window
-            .set_position(Position::Physical(PhysicalPosition::new(x, y)))
-            .map_err(|err| format!("failed to position popup window: {err}"))?;
-    }
+    center_popup_window(app, &window)?;
 
     Ok(window)
 }
 
 fn show_popup_inner(app: &AppHandle, state: &PopupState) -> Result<(), String> {
     let window = ensure_popup_window(app)?;
+
+    center_popup_window(app, &window)?;
 
     window
         .show()

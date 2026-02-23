@@ -39,7 +39,7 @@ pub fn run() {
             // Configure app to NOT appear in Dock (macOS only)
             #[cfg(target_os = "macos")]
             {
-                app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+                app.set_activation_policy(tauri::ActivationPolicy::Regular);
             }
 
             tray::setup_tray(&app.handle())?;

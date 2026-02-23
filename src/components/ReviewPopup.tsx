@@ -32,20 +32,23 @@ export function ReviewPopup({ cards, onReview, onDismiss, className }: ReviewPop
   }, [currentIndex, cards]);
 
   useEffect(() => {
-    if (isEmpty || isFinished) return;
+    if (isEmpty || isFinished || isRevealed) return;
 
     timerRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           if (timerRef.current) clearInterval(timerRef.current);
           // Call onDismiss only once when countdown reaches 0
-          if (!dismissedRef.current) {
-            dismissedRef.current = true;
-            // Use setTimeout to avoid calling during render
-            setTimeout(() => onDismiss(), 0);
-          }
-          return 0;
-        }
+           if (!dismissedRef.current) {
+             dismissedRef.current = true;
+             if (typeof queueMicrotask === 'function') {
+               queueMicrotask(onDismiss);
+             } else {
+               Promise.resolve().then(onDismiss);
+             }
+           }
+           return 0;
+         }
         return prev - 1;
       });
     }, 1000);
@@ -53,7 +56,7 @@ export function ReviewPopup({ cards, onReview, onDismiss, className }: ReviewPop
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [currentIndex, isEmpty, isFinished, onDismiss]);
+  }, [currentIndex, isEmpty, isFinished, isRevealed, onDismiss]);
 
   const handleReveal = useCallback(() => {
     if (!isRevealed) setIsRevealed(true);

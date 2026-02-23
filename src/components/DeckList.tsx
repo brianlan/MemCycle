@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Deck } from "@/lib/types";
 import { DeckCard } from "./DeckCard";
 import { DeckForm } from "./DeckForm";
@@ -31,6 +31,10 @@ export function DeckList({
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
   const [deletingDeck, setDeletingDeck] = useState<Deck | null>(null);
+
+  useEffect(() => {
+    setDecks(initialDecks);
+  }, [initialDecks]);
 
   const handleCreate = async (data: { name: string; description: string }) => {
     if (onCreateDeck) {

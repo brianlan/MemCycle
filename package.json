@@ -10,7 +10,11 @@
     "tauri": "tauri",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test -c playwright.web.config.ts",
+    "test:e2e:web": "playwright test -c playwright.web.config.ts --project=chromium",
+    "test:e2e:webkit": "playwright install webkit && playwright test -c playwright.web.config.ts --project=webkit",
+    "test:e2e:native": "bash scripts/run-native-smoke.sh",
+    "native:db:reset": "bash scripts/reset-native-db.sh"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

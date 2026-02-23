@@ -33,7 +33,8 @@ test.describe('Review Popup', () => {
   await expect(page.getByRole('button', { name: 'Easy' })).toBeVisible();
 
   await page.click('body');
-  await page.waitForTimeout(500); 
+  // JUSTIFIED: Wait for focus to be properly set before keyboard input
+  await page.waitForTimeout(500);
   await page.keyboard.press('3');
   
   await expect(page.locator('text=Card 2 of 2')).toBeVisible();

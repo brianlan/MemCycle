@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
+import {
+  waitForDropdownOptions,
+  waitForSelectionToRegister,
+  waitForElementReady,
+} from './infrastructure/wait-helpers';
 
 const evidenceDir = '.sisyphus/evidence/final-qa';
 if (!fs.existsSync(evidenceDir)) {
@@ -17,7 +22,6 @@ test.describe('Final QA - MemCycle v1.0', () => {
 
   test('Scenario 1: App Launch', async ({ page }) => {
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
 
     // Verify onboarding is shown on first launch
     await expect(page.getByText('Welcome to MemCycle')).toBeVisible({ timeout: 10000 });
@@ -29,7 +33,7 @@ test.describe('Final QA - MemCycle v1.0', () => {
     // Close onboarding to continue
     const closeButton = page.getByLabel('Skip Onboarding');
     await closeButton.click();
-    await page.waitForTimeout(500);
+    await expect(closeButton).not.toBeVisible();
   });
 
   test('Scenario 2: Create Deck', async ({ page }) => {
@@ -38,7 +42,6 @@ test.describe('Final QA - MemCycle v1.0', () => {
     });
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
 
     // Click New Deck
     await page.getByTestId('create-deck-button').click();
@@ -50,6 +53,7 @@ test.describe('Final QA - MemCycle v1.0', () => {
     await page.getByTestId('deck-description-input').fill('Test deck for QA verification');
 
     // Save deck
+    // force: true because submit button may be covered by validation overlay
     await page.getByTestId('deck-submit-button').click({ force: true });
 
     // Verify deck appears
@@ -68,14 +72,15 @@ test.describe('Final QA - MemCycle v1.0', () => {
     });
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
 
     // Create a deck first
     await page.getByTestId('create-deck-button').click();
     await page.getByTestId('deck-name-input').fill('Test Deck');
     await page.getByTestId('deck-description-input').fill('Test deck for cards');
+
+    // force: true because submit button may be covered by validation overlay
     await page.getByTestId('deck-submit-button').click({ force: true });
-    await page.waitForTimeout(500);
+    await expect(page.getByRole('dialog')).not.toBeVisible();
 
     // Click Create Card button
     await page.getByRole('button', { name: /Create Card/i }).click();
@@ -83,24 +88,25 @@ test.describe('Final QA - MemCycle v1.0', () => {
 
     // Fill card with markdown content
     await page.locator('#front-input').fill('# JavaScript Question\n\nWhat is a closure?');
-    await page.locator('#back-input').fill('# Answer\n\nA closure is a function that remembers the variables from its outer scope even when executed outside that scope.\n\n```javascript\nfunction outer() {\n  const x = 10;\n  return function inner() {\n    return x;\n  };\n}\n```');
+    await page.locator('#back-input').fill('# Answer\n\nA closure is a function that remembers variables from its outer scope even when executed outside that scope.\n\n```javascript\nfunction outer() {\n  const x = 10;\n  return function inner() {\n    return x;\n  };\n}\n```');
 
     // Select deck (get first available option)
     const deckSelect = page.locator('#deck-select');
-    await page.waitForTimeout(300); // Wait for options to populate
+    await waitForDropdownOptions(deckSelect, { minCount: 1 });
     const options = await deckSelect.locator('option').count();
     if (options > 1) {
       await deckSelect.selectOption({ index: 1 });
-      await page.waitForTimeout(200); // Wait for selection to register
+      await waitForSelectionToRegister(deckSelect);
     }
 
-    // Wait a bit for the form to validate
-    await page.waitForTimeout(300);
+    // Wait for form to be valid
+    const saveButton = page.getByRole('button', { name: 'Save Card' });
+    await waitForElementReady(saveButton);
 
     // Try to save card (may fail in web demo mode, but that's expected)
     try {
-      await page.getByRole('button', { name: 'Save Card' }).click({ timeout: 3000 });
-      await page.waitForTimeout(500);
+      await saveButton.click({ timeout: 3000 });
+      await expect(page.locator('text=Create New Card')).not.toBeVisible({ timeout: 3000 });
     } catch (error) {
       // In web demo mode, saving may not work - that's expected
       console.log('Note: Card saving skipped in web demo mode');
@@ -110,7 +116,7 @@ test.describe('Final QA - MemCycle v1.0', () => {
     const cardForm = page.locator('text=Create New Card');
     const isVisible = await cardForm.isVisible().catch(() => false);
     if (isVisible) {
-      // Close the form manually if still open
+      // Close form manually if still open
       await page.getByRole('button', { name: 'Cancel' }).click();
     }
 
@@ -125,7 +131,6 @@ test.describe('Final QA - MemCycle v1.0', () => {
     });
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
 
     // Open settings
     await page.getByRole('button', { name: /Settings/i }).click();
@@ -134,14 +139,14 @@ test.describe('Final QA - MemCycle v1.0', () => {
 
     // Navigate to Algorithm tab
     await page.getByRole('button', { name: 'Algorithm' }).click();
-    await page.waitForTimeout(300);
+    await expect(page.locator('text=Leitner System')).toBeVisible();
 
     // Change algorithm to Leitner
     await page.locator('text=Leitner System').click();
 
     // Navigate to Timing tab and change interval
     await page.getByRole('button', { name: 'Timing' }).click();
-    await page.waitForTimeout(300);
+    await expect(page.locator('input[type="range"][id="popupInterval"]')).toBeVisible();
 
     const intervalSlider = page.locator('input[type="range"][id="popupInterval"]');
     await intervalSlider.evaluate((el: HTMLInputElement) => {
@@ -152,7 +157,7 @@ test.describe('Final QA - MemCycle v1.0', () => {
 
     // Save settings
     await page.getByRole('button', { name: 'Save Changes' }).click();
-    await page.waitForTimeout(500);
+    await expect(page.getByRole('dialog')).not.toBeVisible();
 
     // Verify settings dialog closed
     await expect(page.getByRole('dialog')).not.toBeVisible();
@@ -173,11 +178,9 @@ test.describe('Final QA - MemCycle v1.0', () => {
     });
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
 
     // Click Start Review button
     await page.getByRole('button', { name: 'Start Review' }).click();
-    await page.waitForTimeout(1000);
 
     // Verify review popup appears with demo card
     await expect(page.locator('text=Card 1 of 2')).toBeVisible();
@@ -187,30 +190,26 @@ test.describe('Final QA - MemCycle v1.0', () => {
 
     // Reveal answer
     await page.getByRole('button', { name: /Show Answer/i }).click();
-    await page.waitForTimeout(300);
 
     // Verify answer is shown
     await expect(page.locator('text=Card 1 Back')).toBeVisible();
     await expect(page.locator('text=Paris')).toBeVisible();
 
-    // Rate card (click "Good" which is typically the 3rd button)
+    // Rate card (click "Good" which is typically 3rd button)
     const ratingButtons = page.locator('button[aria-label*="Rate"]').or(page.locator('button').filter({ hasText: /Again|Hard|Good|Easy/i }));
-    await ratingButtons.nth(2).click(); // "Good" is typically the 3rd option
-    await page.waitForTimeout(500);
+    await ratingButtons.nth(2).click(); // "Good" is typically 3rd option
 
     // Verify moved to next card
     await expect(page.locator('text=Card 2 of 2')).toBeVisible();
 
     // Reveal second card
     await page.getByRole('button', { name: /Show Answer/i }).click();
-    await page.waitForTimeout(300);
 
     // Capture final state
     await page.screenshot({ path: path.join(evidenceDir, '05-review-02-final.png') });
 
     // Rate second card
     await ratingButtons.nth(2).click();
-    await page.waitForTimeout(500);
 
     // Verify review completed or review popup closed
     const noCards = page.locator('text=No cards due!');

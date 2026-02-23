@@ -7,45 +7,56 @@ test.describe('Card Creation Form', () => {
   test.beforeEach(async ({ page }) => {
     // Close any open dialogs/modals from previous tests
     await page.keyboard.press('Escape');
+    // JUSTIFIED: Wait for modal animations to complete after Escape key press
     await page.waitForTimeout(500);
-    
+
     await page.addInitScript(() => {
       localStorage.setItem('memcycle.settings.onboardingCompleted', 'true');
     });
     await page.goto('/');
+
+    await page.getByTestId('create-deck-button').click();
+    await page.getByTestId('deck-name-input').fill('Form Test Deck');
+    await page.getByTestId('deck-description-input').fill('Deck for card form tests');
+    // force: true because submit button may be covered by validation overlay
+    await page.getByTestId('deck-submit-button').click({ force: true });
+    await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 
   test('should allow creating a new card with previews', async ({ page }) => {
+    // force: true because create card button may be covered by hover overlay
     await page.getByRole('button', { name: 'Create Card' }).click({ force: true });
-    
+
     await expect(page.locator('.fixed.inset-0')).toBeVisible();
 
     const frontInput = page.getByLabel('Front (Markdown)');
     const backInput = page.getByLabel('Back (Markdown)');
-    
+
     await expect(frontInput).toBeVisible();
     await expect(backInput).toBeVisible();
     await expect(page.getByText('Preview will appear here...').first()).toBeVisible();
 
     await frontInput.fill('# Hello Front');
     await expect(page.locator('.markdown-content h1').filter({ hasText: 'Hello Front' })).toBeVisible();
-    
+
     await backInput.fill('**Bold Back**');
     await expect(page.locator('.markdown-content strong').filter({ hasText: 'Bold Back' })).toBeVisible();
 
     const deckSelect = page.getByLabel('Deck');
-    await expect(deckSelect).toHaveValue('d1');
+    await expect(deckSelect).not.toHaveValue('');
 
     await page.screenshot({ path: '.sisyphus/evidence/task-22-form.png' });
 
+    // force: true because save button may be covered by validation overlay
     await page.getByRole('button', { name: 'Save Card' }).click({ force: true });
 
     await expect(frontInput).not.toBeVisible();
+    await expect(page.getByText('Unable to save card').first()).toBeHidden();
   });
 
   test('should save on Cmd+Enter', async ({ page }) => {
     await page.getByRole('button', { name: 'Create Card' }).click();
-    
+
     const frontInput = page.getByLabel('Front (Markdown)');
     const backInput = page.getByLabel('Back (Markdown)');
 
@@ -55,7 +66,8 @@ test.describe('Card Creation Form', () => {
     await backInput.press('Meta+Enter');
 
     await expect(frontInput).not.toBeVisible();
-    
+    await expect(page.getByText('Unable to save card').first()).toBeHidden();
+
     const evidenceDir = path.join('.sisyphus', 'evidence');
     if (!fs.existsSync(evidenceDir)) {
       fs.mkdirSync(evidenceDir, { recursive: true });
